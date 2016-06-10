@@ -1,0 +1,5 @@
+cloud:
+  project_id:     'test-project-id'
+
+logging:
+  level:          debug
