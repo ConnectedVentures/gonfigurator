@@ -2,9 +2,27 @@
 This package is used to load YAML configuration files and parse them into
 structs.
 
+# Install
+
+## go
+
+```sh
+go get github.com/ConnectedVentures/gonfigurator
+```
+
+## gb
+
+```sh
+gb vendor fetch github.com/ConnectedVentures/gonfigurator
+```
+
 # Example
 
 ```go
+import (
+	"gonfigurator"
+)
+
 type cloudConfig struct {
 	ProjectID string       `yaml:"project_id"`
 }
