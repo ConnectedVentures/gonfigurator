@@ -20,7 +20,7 @@ gb vendor fetch github.com/ConnectedVentures/gonfigurator
 
 ```go
 import (
-	"gonfigurator"
+	"github.com/ConnectedVentures/gonfigurator"
 )
 
 type cloudConfig struct {
