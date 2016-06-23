@@ -24,16 +24,16 @@ import (
 )
 
 type cloudConfig struct {
-	ProjectID string       `yaml:"project_id"`
+	ProjectID string       `json:"project_id"`
 }
 
 type loggingConfig struct {
-	Level string `yaml:"level"`
+	Level string `json:"level"`
 }
 
 type myserviceConfig struct {
-	Cloud   cloudConfig   `yaml:"cloud"`
-	Logging loggingConfig `yaml:"logging"`
+	Cloud   cloudConfig   `json:"cloud"`
+	Logging loggingConfig `json:"logging"`
 }
 
 var config myserviceConfig
