@@ -8,6 +8,12 @@ import (
 	"github.com/ghodss/yaml"
 )
 
+// Loader provides a mockable interface for the gonfigurator library
+type Loader interface {
+	Parse(string, interface{}) error
+}
+
+// Parse loads the .yml file at the given path and reads it into v
 func Parse(defaultPath string, v interface{}) error {
 	f := flag.String("c", defaultPath, "Path to the configuration file")
 	flag.Parse()
