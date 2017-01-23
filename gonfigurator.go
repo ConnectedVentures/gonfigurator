@@ -1,6 +1,7 @@
 package gonfigurator
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -8,14 +9,15 @@ import (
 	"github.com/ghodss/yaml"
 )
 
-// Loader implements the library blueprint
-type Loader struct {
+// YamlLoader implements the loader interface to load YAML files
+type YamlLoader struct {
 	ConfigPath string
 }
 
-// LoaderBlueprint provides a mockable interface for the gonfigurator library
-type LoaderBlueprint interface {
-	Parse(string, interface{}) error
+// ConfigLoader should load a file at the given path into the target interface
+type ConfigLoader interface {
+	Parse(path string, target interface{}) error
+	Path() string
 }
 
 // Parse loads the .yml file at the given path and reads it into v
@@ -34,23 +36,13 @@ func Parse(defaultPath string, v interface{}) error {
 	return nil
 }
 
-// Parse loads the .yml file from Loader.ConfigPath if set, defaultPath as a fallback.
-// Adheres to the LoaderBlueprint interface.
-func (l *Loader) Parse(defaultPath string, v interface{}) error {
-	cfgPath := l.ConfigPath
-	if l.ConfigPath == "" {
-		f := flag.String("c", defaultPath, "Path to the configuration file")
-		flag.Parse()
-		cfgPath = *f
+// ParseConfig uses the specified loader to extract configuration into the target
+func ParseConfig(loader ConfigLoader, target interface{}) error {
+	path := loader.Path()
+	if path == "" {
+		return errors.New("no path could be loaded")
 	}
 
-	contents, err := ioutil.ReadFile(cfgPath)
-	if err != nil {
-		return fmt.Errorf("Could not read config file: %s", err.Error())
-	}
-	err = yaml.Unmarshal([]byte(contents), v)
-	if err != nil {
-		return fmt.Errorf("Could not parse config file: %s", err.Error())
-	}
-	return nil
+	return loader.Parse(path, target)
 }
+

@@ -29,32 +29,29 @@ func TestTest(t *testing.T) {
 	log.Println(config.Cloud.ProjectID)
 }
 
-func TestLoaderParse(t *testing.T) {
-	var cfg myserviceConfig
-	l := &Loader{
-		ConfigPath: "./example.yaml",
-	}
-
-	err := l.Parse("./example.yaml", &cfg)
-	if err != nil {
-		t.Error(err)
-	}
-
-	if cfg.Logging.Level != "debug" {
-		t.Error("expected logging.level \"debug\", instead found: " + cfg.Logging.Level)
-	}
-}
-
 func TestMockLoader(t *testing.T) {
-	mockedLoader := &LoaderBlueprintMock{
+	mockedLoader := &ConfigLoaderMock{
 		ParseFunc: func(path string, target interface{}) error {
 			return errors.New("something went wrong")
 		},
+		PathFunc: func() string {
+			return ""
+		},
 	}
+
 	var someTarget interface{}
-	err := mockedLoader.Parse("some path", someTarget)
+	err := ParseConfig(mockedLoader, someTarget)
 	if err == nil {
-		t.Error("expected error, found nil")
+		t.Error("expected no path error, found nil")
+	}
+
+	mockedLoader.PathFunc = func() string {
+		return "a path"
+	}
+
+	err = mockedLoader.Parse("some path", someTarget)
+	if err == nil {
+		t.Error("expected parse error, found nil")
 	}
 
 	mockedLoader.ParseFunc = func(path string, target interface{}) error {
