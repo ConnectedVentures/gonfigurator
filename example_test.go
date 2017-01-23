@@ -1,6 +1,7 @@
 package gonfigurator
 
 import (
+	"errors"
 	"log"
 	"testing"
 )
@@ -26,4 +27,39 @@ func TestTest(t *testing.T) {
 		log.Fatal(err)
 	}
 	log.Println(config.Cloud.ProjectID)
+}
+
+func TestMockLoader(t *testing.T) {
+	mockedLoader := &ConfigLoaderMock{
+		ParseFunc: func(path string, target interface{}) error {
+			return errors.New("something went wrong")
+		},
+		PathFunc: func() string {
+			return ""
+		},
+	}
+
+	var someTarget interface{}
+	err := ParseConfig(mockedLoader, someTarget)
+	if err == nil {
+		t.Error("expected no path error, found nil")
+	}
+
+	mockedLoader.PathFunc = func() string {
+		return "a path"
+	}
+
+	err = mockedLoader.Parse("some path", someTarget)
+	if err == nil {
+		t.Error("expected parse error, found nil")
+	}
+
+	mockedLoader.ParseFunc = func(path string, target interface{}) error {
+		return nil
+	}
+
+	err = mockedLoader.Parse("some path", someTarget)
+	if err != nil {
+		t.Error(err)
+	}
 }
