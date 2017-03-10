@@ -20,9 +20,15 @@ type ConfigLoader interface {
 	Path() string
 }
 
-// Parse loads the .yml file at the given path and reads it into v
+// Parse loads the YAML file at the given path and reads it into v
 func Parse(defaultPath string, v interface{}) error {
-	f := flag.String("c", defaultPath, "Path to the configuration file")
+	return ParseCustomFlag(defaultPath, "c", v)
+}
+
+// ParseCustomFlag loads the YAML file from the default path or using the
+// path specified using custom command line flag (flagName)
+func ParseCustomFlag(defaultPath string, flagName string, v interface{}) error {
+	f := flag.String(flagName, defaultPath, "Path to the configuration file")
 	flag.Parse()
 
 	contents, err := ioutil.ReadFile(*f)
@@ -45,4 +51,3 @@ func ParseConfig(loader ConfigLoader, target interface{}) error {
 
 	return loader.Parse(path, target)
 }
-
