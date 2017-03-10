@@ -9,6 +9,15 @@ import (
 	"github.com/ghodss/yaml"
 )
 
+type config struct {
+	flag   *string
+	target interface{}
+}
+
+var (
+	configs []config
+)
+
 // YamlLoader implements the loader interface to load YAML files
 type YamlLoader struct {
 	ConfigPath string
@@ -20,18 +29,32 @@ type ConfigLoader interface {
 	Path() string
 }
 
-// Parse loads the .yml file at the given path and reads it into v
+// Parse loads the YAML file at the given path and reads it into v
 func Parse(defaultPath string, v interface{}) error {
-	f := flag.String("c", defaultPath, "Path to the configuration file")
+	ParseCustomFlag(defaultPath, "c", v)
+	return Load()
+}
+
+// ParseCustomFlag will schedule to load the YAML file from the default path or using the
+// path specified using custom command line flag (flagName) when Load() is called
+func ParseCustomFlag(defaultPath string, flagName string, v interface{}) {
+	f := flag.String(flagName, defaultPath, "Path to the configuration file")
+	configs = append(configs, config{flag: f, target: v})
+}
+
+func Load() error {
 	flag.Parse()
 
-	contents, err := ioutil.ReadFile(*f)
-	if err != nil {
-		return fmt.Errorf("Could not read config file: %s", err.Error())
-	}
-	err = yaml.Unmarshal([]byte(contents), v)
-	if err != nil {
-		return fmt.Errorf("Could not parse config file: %s", err.Error())
+	for _, conf := range configs {
+		f := conf.flag
+		contents, err := ioutil.ReadFile(*f)
+		if err != nil {
+			return fmt.Errorf("Could not read config file: %s", err.Error())
+		}
+		err = yaml.Unmarshal([]byte(contents), conf.target)
+		if err != nil {
+			return fmt.Errorf("Could not parse config file: %s", err.Error())
+		}
 	}
 	return nil
 }
@@ -45,4 +68,3 @@ func ParseConfig(loader ConfigLoader, target interface{}) error {
 
 	return loader.Parse(path, target)
 }
-
