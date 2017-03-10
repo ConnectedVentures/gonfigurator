@@ -26,7 +26,9 @@ type YamlLoader struct {
 // ConfigLoader should load a file at the given path into the target interface
 type ConfigLoader interface {
 	Parse(path string, target interface{}) error
+	ParseCustomFlag(defaultPath string, flagName string, v interface{})
 	Path() string
+	Load() error
 }
 
 // Parse loads the YAML file at the given path and reads it into v
