@@ -7,20 +7,20 @@ structs.
 ## go
 
 ```sh
-go get github.com/connectedventures/gonfigurator
+go get github.com/fresh8gaming/gonfigurator
 ```
 
 ## gb
 
 ```sh
-gb vendor fetch github.com/connectedventures/gonfigurator
+gb vendor fetch github.com/fresh8gaming/gonfigurator
 ```
 
 # Example
 
 ```go
 import (
-	"github.com/connectedventures/gonfigurator"
+	"github.com/fresh8gaming/gonfigurator"
 )
 
 type cloudConfig struct {
